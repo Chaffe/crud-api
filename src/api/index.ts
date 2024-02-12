@@ -6,7 +6,7 @@ import { handleBadRequestError, handleUserNotExistedError, handleUUIDError } fro
 
 const SPLIT_URL_LAST_INDEX = -1;
 
-const getUrlId = (req: IncomingMessage) => req.url.split('/').at(SPLIT_URL_LAST_INDEX)
+const getUrlId = (req: IncomingMessage): string|undefined => req.url?.split('/').at(SPLIT_URL_LAST_INDEX)
 
 export const getAllUsers = (req: IncomingMessage, res: ServerResponse): void => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -44,6 +44,10 @@ export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
 
 export const getUserById = (req: IncomingMessage, res: ServerResponse): void => {
   const id = getUrlId(req);
+  if (!id) {
+    return;
+  }
+
   const isUUIDValid = uuidValidate(id);
 
   if (!isUUIDValid) {
@@ -63,6 +67,10 @@ export const getUserById = (req: IncomingMessage, res: ServerResponse): void => 
 
 export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
   const id = getUrlId(req);
+  if (!id) {
+    return;
+  }
+
   const isUUIDValid = uuidValidate(id);
 
   if (!isUUIDValid) {
@@ -101,6 +109,10 @@ export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
 
 export const deleteUser = (req: IncomingMessage, res: ServerResponse): void => {
   const id = getUrlId(req);
+  if (!id) {
+    return;
+  }
+
   const isUUIDValid = uuidValidate(id);
 
   if (isUUIDValid) {
