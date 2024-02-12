@@ -1,19 +1,21 @@
-export const handleNotFoundError = (res) => {
+import { ServerResponse } from 'http';
+
+export const handleNotFoundError = (res: ServerResponse) => {
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'Not Found' }));
 }
 
-export const handleBadRequestError = (res) => {
+export const handleBadRequestError = (res: ServerResponse) => {
   res.writeHead(400, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'Body does not contain required fields' }));
 }
 
-export const handleUUIDError = (res) => {
+export const handleUUIDError = (res: ServerResponse) => {
   res.writeHead(400, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'User id is not correct' }));
 }
 
-export const handleUserNotExistedError = (res) => {
+export const handleUserNotExistedError = (res: ServerResponse) => {
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'User is not existed' }));
 }
