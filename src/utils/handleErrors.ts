@@ -19,3 +19,8 @@ export const handleUserNotExistedError = (res: ServerResponse) => {
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'User is not existed' }));
 }
+
+export const internalServerError = (res: ServerResponse) => {
+  res.writeHead(50, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ message: 'Internal Server Error. Please try again later.' }))
+}
