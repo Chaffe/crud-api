@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import http from 'http';
 import app from "./app";
+import { PORT } from "./consts";
 
 const server = http.createServer(app);
 
-server.listen(3000, () => console.log(`Listening port ${process.env.PORT}`));
+server.listen(PORT, () => console.log(`Listening port ${PORT}`));
