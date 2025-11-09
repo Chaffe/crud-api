@@ -12,13 +12,13 @@ import {
 const app = async (req: IncomingMessage, res: ServerResponse) => {
   if (!req?.url) return;
 
-  const isUrlValid = checkIsUrlValid(req);
-  if (!isUrlValid) {
-    handleNotFoundError(res);
-    return;
-  }
-
   if (req.url.split('/').length === 4) {
+    const isUrlValid = checkIsUrlValid(req, true);
+    if (!isUrlValid) {
+      handleNotFoundError(res);
+      return;
+    }
+
     switch (req.method) {
       case 'GET':
         getUserById(req, res);
@@ -31,6 +31,12 @@ const app = async (req: IncomingMessage, res: ServerResponse) => {
         break;
     }
   } else {
+    const isUrlValid = checkIsUrlValid(req);
+    if (!isUrlValid) {
+      handleNotFoundError(res);
+      return;
+    }
+
     switch (req.method) {
       case 'GET':
         getAllUsers(req, res);

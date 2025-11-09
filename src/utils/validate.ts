@@ -2,14 +2,17 @@ import { IncomingMessage } from 'http';
 import { CreateUserDto } from "../types/user.dto";
 import { BASE_API_URL } from "../consts";
 
-export const checkIsUrlValid = (req: IncomingMessage): boolean => {
-  if (!req.url) {
-    return false;
-  }
+export const checkIsUrlValid = (req: IncomingMessage, isRequestById = false): boolean => {
+  if (!req.url) return false;
 
   const splitPath = req.url.split('/');
+  if (splitPath.length > 4) return false;
 
-  return !(!req.url.startsWith(BASE_API_URL) || splitPath.length > 4);
+  if (isRequestById) {
+    return req.url.startsWith(BASE_API_URL);
+  } else {
+    return req.url === BASE_API_URL;
+  }
 };
 
 export const checkIsUserValid = (args: CreateUserDto) => {

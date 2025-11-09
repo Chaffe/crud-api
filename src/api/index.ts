@@ -18,7 +18,6 @@ const getUrlId = (req: IncomingMessage): string|undefined => {
   return urlArr[urlArr.length - 1];
 }
 
-
 export const getAllUsers = (_: IncomingMessage, res: ServerResponse): void => {
   try {
     res.writeHead(STATUS_MODELS.SUCCEEDED_REQUEST.code, CONTENT_TYPE_HEADER);
