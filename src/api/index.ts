@@ -53,7 +53,7 @@ export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
       };
 
       usersAPI.push(userData);
-      res.writeHead(STATUS_MODELS.SUCCEEDED_REQUEST.code, CONTENT_TYPE_HEADER);
+      res.writeHead(STATUS_MODELS.CREATED_REQUEST.code, CONTENT_TYPE_HEADER);
       res.end(JSON.stringify(userData));
     })
   } catch (error) {
@@ -128,7 +128,7 @@ export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
 
       const userIndex = usersAPI.findIndex(user => user.id === id);
       usersAPI[userIndex] = { ...usersAPI[userIndex], ...JSON.parse(requestBody) };
-      res.writeHead(STATUS_MODELS.CREATED_REQUEST.code, CONTENT_TYPE_HEADER);
+      res.writeHead(STATUS_MODELS.SUCCEEDED_REQUEST.code, CONTENT_TYPE_HEADER);
       res.end(JSON.stringify(usersAPI[userIndex]));
     })
   } catch (error) {
