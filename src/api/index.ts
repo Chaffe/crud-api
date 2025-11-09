@@ -7,7 +7,7 @@ import {
   handleUserNotExistedError
 } from "../utils/handleErrors";
 import { CONTENT_TYPE_HEADER, STATUS_MODELS, SWW_ERROR_MESSAGE } from "../consts";
-import { usersAPI } from "../db/users";
+import { getUsers, setUsers } from "../db";
 import { checkIsUserValid } from "../utils/validate";
 import { CreateUserDto } from "../types/user.dto";
 
@@ -18,17 +18,19 @@ const getUrlId = (req: IncomingMessage): string|undefined => {
   return urlArr[urlArr.length - 1];
 }
 
-export const getAllUsers = (_: IncomingMessage, res: ServerResponse): void => {
+export const getAllUsers = async (_: IncomingMessage, res: ServerResponse): Promise<void> => {
+  const users = await getUsers();
+
   try {
     res.writeHead(STATUS_MODELS.SUCCEEDED_REQUEST.code, CONTENT_TYPE_HEADER);
-    res.end(JSON.stringify(usersAPI));
+    res.end(JSON.stringify(users));
   } catch (error) {
     console.error(SWW_ERROR_MESSAGE, error);
     internalServerError(res);
   }
 };
 
-export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
+export const createUser = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
   let requestBody = '';
 
   try {
@@ -36,7 +38,7 @@ export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
       requestBody = chunk.toString();
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       const { username, age, hobbies }: CreateUserDto = JSON.parse(requestBody);
       const isUserValid = checkIsUserValid({ username, age, hobbies });
 
@@ -45,6 +47,8 @@ export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
         return;
       }
 
+      const users = await getUsers();
+
       const userData = {
         id: uuidv4(),
         username,
@@ -52,7 +56,8 @@ export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
         hobbies,
       };
 
-      usersAPI.push(userData);
+      users.push(userData);
+      await setUsers(users);
       res.writeHead(STATUS_MODELS.CREATED_REQUEST.code, CONTENT_TYPE_HEADER);
       res.end(JSON.stringify(userData));
     })
@@ -62,7 +67,7 @@ export const createUser = (req: IncomingMessage, res: ServerResponse): void => {
   }
 };
 
-export const getUserById = (req: IncomingMessage, res: ServerResponse): void => {
+export const getUserById = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
   try {
     const id = getUrlId(req);
     if (!id) {
@@ -76,7 +81,8 @@ export const getUserById = (req: IncomingMessage, res: ServerResponse): void => 
       return;
     }
 
-    const user = usersAPI.find(user => user.id === id);
+    const users = await getUsers();
+    const user = users.find(user => user.id === id);
     if (!user) {
       handleUserNotExistedError(res);
       return;
@@ -90,7 +96,7 @@ export const getUserById = (req: IncomingMessage, res: ServerResponse): void => 
   }
 };
 
-export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
+export const updateUser = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
   try {
     const id = getUrlId(req);
     if (!id) {
@@ -104,7 +110,8 @@ export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
       return;
     }
 
-    const user = usersAPI.find(user => user.id === id);
+    const users = await getUsers();
+    const user = users.find(user => user.id === id);
 
     if (!user) {
       handleUserNotExistedError(res);
@@ -117,7 +124,7 @@ export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
       requestBody = chunk.toString();
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       const { username, age, hobbies }: CreateUserDto = JSON.parse(requestBody);
       const isUserValid = checkIsUserValid({username, age, hobbies});
 
@@ -126,10 +133,11 @@ export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
         return;
       }
 
-      const userIndex = usersAPI.findIndex(user => user.id === id);
-      usersAPI[userIndex] = { ...usersAPI[userIndex], ...JSON.parse(requestBody) };
+      const userIndex = users.findIndex(user => user.id === id);
+      users[userIndex] = { ...users[userIndex], ...JSON.parse(requestBody) };
+      await setUsers(users);
       res.writeHead(STATUS_MODELS.SUCCEEDED_REQUEST.code, CONTENT_TYPE_HEADER);
-      res.end(JSON.stringify(usersAPI[userIndex]));
+      res.end(JSON.stringify(users[userIndex]));
     })
   } catch (error) {
     console.error(SWW_ERROR_MESSAGE, error);
@@ -137,7 +145,7 @@ export const updateUser = (req: IncomingMessage, res: ServerResponse): void => {
   }
 };
 
-export const deleteUser = (req: IncomingMessage, res: ServerResponse): void => {
+export const deleteUser = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
   try {
     const id = getUrlId(req);
     if (!id) {
@@ -147,11 +155,13 @@ export const deleteUser = (req: IncomingMessage, res: ServerResponse): void => {
     const isUUIDValid = uuidValidate(id);
 
     if (isUUIDValid) {
-      const user = usersAPI.find(user => user.id === id);
-      const userIndex = usersAPI.findIndex(user => user.id === id);
+      const users = await getUsers();
+      const user = users.find(user => user.id === id);
+      const userIndex = users.findIndex(user => user.id === id);
 
       if (user) {
-        usersAPI.splice(userIndex, 1);
+        users.splice(userIndex, 1);
+        await setUsers(users);
         res.writeHead(STATUS_MODELS.DELETED_REQUEST.code, CONTENT_TYPE_HEADER);
         res.end(JSON.stringify(user));
       } else {

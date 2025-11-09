@@ -1,4 +1,4 @@
-export const PORT = process.env.PORT || 3000;
+export const PORT = +(process.env.PORT || 3000);
 export const BASE_API_URL= process.env.BASE_API_URL || "/api/users";
 
 export const CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
