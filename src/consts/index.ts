@@ -3,7 +3,21 @@ export const BASE_API_URL= process.env.BASE_API_URL || "/api/users";
 
 export const CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
 
-export const ERROR_MODELS = {
+export const SWW_ERROR_MESSAGE = "Something went wrong.";
+
+export const STATUS_MODELS = {
+  SUCCEEDED_REQUEST: {
+    code: 200,
+    message: null,
+  },
+  CREATED_REQUEST: {
+    code: 201,
+    message: null,
+  },
+  DELETED_REQUEST: {
+    code: 204,
+    message: null,
+  },
   NOT_FOUND: {
     code: 404,
     message: 'Not Found',

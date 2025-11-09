@@ -1,7 +1,13 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { checkIsUrlValid } from "./utils/validate";
 import { handleNotFoundError } from "./utils/handleErrors";
-import { getAllUsers, createUser } from "./api";
+import {
+  getAllUsers,
+  createUser,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from "./api";
 
 const app = async (req: IncomingMessage, res: ServerResponse) => {
   if (!req?.url) return;
@@ -13,7 +19,17 @@ const app = async (req: IncomingMessage, res: ServerResponse) => {
   }
 
   if (req.url.split('/').length === 4) {
-    return;
+    switch (req.method) {
+      case 'GET':
+        getUserById(req, res);
+        break;
+      case 'PUT':
+        updateUser(req, res);
+        break;
+      case 'DELETE':
+        deleteUser(req, res);
+        break;
+    }
   } else {
     switch (req.method) {
       case 'GET':
